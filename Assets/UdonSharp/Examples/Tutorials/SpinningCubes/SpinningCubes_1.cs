@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:076b39a259906fba3073c76bf6e7b150d23e558f4255444a3f92bc7f8b9bd550
-size 523
+
+using UnityEngine;
+using VRC.SDK3.Components;
+using VRC.SDKBase;
+using VRC.Udon;
+
+namespace UdonSharp.Examples.Tutorials
+{
+    /// <summary>
+    /// U# implementation of the first Udon spinning cube example (https://www.youtube.com/watch?v=SP4K89z_Qck) 
+    /// </summary>
+    [AddComponentMenu("Udon Sharp/Tutorials/Spinning Cubes 1")]
+    public class SpinningCubes_1 : UdonSharpBehaviour 
+    {
+        private void Update()
+        {
+            transform.Rotate(Vector3.up, 1f);
+        }
+    }
+}

@@ -1,3 +1,26 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0013dab9915ad0d758669978b0d819142945461f7fc92fa6afc518698fd7a2db
-size 667
+using UdonSharp;
+using UnityEngine;
+using VRC.SDKBase;
+using VRC.Udon;
+
+/// <summary>
+/// Interactしたユーザーのジャンプ力・歩く速さ・走る速さを、
+/// 指定されたものに変更します。
+/// </summary>
+public class ChangeLocalPlayerMovingStrengthOnInteract : UdonSharpBehaviour {
+  [SerializeField]
+  private int jumpImpulse = 5;
+
+  [SerializeField]
+  private int walkSpeed = 4;
+
+  [SerializeField]
+  private int runSpeed = 8;
+
+  public override void Interact() {
+    var player = Networking.LocalPlayer;
+    player.SetJumpImpulse(this.jumpImpulse);
+    player.SetWalkSpeed(this.walkSpeed);
+    player.SetRunSpeed(this.runSpeed);
+  }
+}

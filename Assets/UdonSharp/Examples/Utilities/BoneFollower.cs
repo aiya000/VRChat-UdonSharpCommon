@@ -1,3 +1,34 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:aac71189b1169f6fbdb2e045ad138ed6a6542311e47b079fdfca29125d4bf7a8
-size 849
+
+using UnityEngine;
+using VRC.SDK3.Components;
+using VRC.SDKBase;
+using VRC.Udon;
+
+namespace UdonSharp.Examples.Utilities
+{
+    /// <summary>
+    /// Follows a chosen bone on humanoid avatars using the playerapi
+    /// </summary>
+    [AddComponentMenu("Udon Sharp/Utilities/Bone Follower")]
+    public class BoneFollower : UdonSharpBehaviour 
+    {
+        public HumanBodyBones trackedBone;
+
+        VRCPlayerApi playerApi;
+        bool isInEditor;
+
+        void Start()
+        {
+            playerApi = Networking.LocalPlayer;
+            isInEditor = playerApi == null;
+        }
+
+        void Update()
+        {
+            if (isInEditor)
+                return;
+
+            transform.SetPositionAndRotation(playerApi.GetBonePosition(trackedBone), playerApi.GetBoneRotation(trackedBone));
+        }
+    }
+}

@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:537a0110d14a805809c42b63f12f905c5c3c8529e457b287aec703ee7b24348b
-size 662
+﻿#if VRC_SDK_VRCSDK2
+
+using UnityEngine;
+using VRCSDK2;
+
+namespace VRCPrefabs.CyanEmu
+{
+    [AddComponentMenu("")]
+    public class CyanEmuSyncAnimationHelper : MonoBehaviour
+    {
+        public static void InitializationDelegate(VRC_SyncAnimation obj)
+        {
+            obj.gameObject.AddComponent<CyanEmuSyncAnimationHelper>().SetSyncAnimation(obj);
+        }
+
+        private VRC_SyncAnimation sync_;
+
+        private void SetSyncAnimation(VRC_SyncAnimation sync)
+        {
+            sync_ = sync;
+
+            this.Log("Syncing animations on object. " + VRC.Tools.GetGameObjectPath(gameObject));
+        }
+    }
+}
+
+#endif

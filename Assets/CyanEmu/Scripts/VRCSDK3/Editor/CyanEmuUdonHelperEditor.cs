@@ -1,3 +1,42 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1c67cefecbfc2008fd99f656b08807d025e937f644f30061c73d305735a1877f
-size 1063
+﻿#if UDON
+
+using UnityEngine;
+using UnityEditor;
+using VRC.Udon;
+
+namespace VRCPrefabs.CyanEmu
+{
+    [CustomEditor(typeof(CyanEmuUdonHelper))]
+    public class CyanEmuUdonHelperEditor : Editor
+    {
+        private bool expand_ = false;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            CyanEmuUdonHelper udonHelper = target as CyanEmuUdonHelper;
+
+            CyanEmuSyncableEditorHelper.DisplaySyncOptions(udonHelper);
+
+            UdonBehaviour udonBehaviour = udonHelper.GetUdonBehaviour();
+
+            // TODO set public variables
+
+            expand_ = EditorGUILayout.Foldout(expand_, "Run Custom Event");
+
+            if (expand_)
+            {
+                foreach (string eventName in udonBehaviour.GetPrograms())
+                {
+                    if (GUILayout.Button(eventName))
+                    {
+                        udonBehaviour.SendCustomEvent(eventName);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#endif

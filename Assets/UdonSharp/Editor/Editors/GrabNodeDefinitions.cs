@@ -1,3 +1,28 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a1ff5f9188a2ad71c5107196c060fe5c63646d19ff0d233acd97dfb4f11b713a
-size 784
+﻿#if UNITY_EDITOR && UDONSHARP_DEBUG
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using VRC.Udon.Editor;
+
+public class GrabNodeDefinitions : EditorWindow
+{
+    [MenuItem("Window/Udon Sharp/Node Definition Grabber")]
+    static void Init()
+    {
+        GrabNodeDefinitions window = GetWindow<GrabNodeDefinitions>(false, "Node Definition Grabber");
+    }
+
+    private void OnGUI()
+    {
+        if (GUILayout.Button("Get Node Names"))
+        {
+            IEnumerable<string> nodeNames = UdonEditorManager.Instance.GetNodeDefinitions().Select(e => e.fullName).OrderBy(e => e);
+            EditorGUIUtility.systemCopyBuffer = string.Join("\n", nodeNames);
+        }
+    }
+}
+
+#endif

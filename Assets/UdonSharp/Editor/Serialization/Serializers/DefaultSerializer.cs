@@ -1,3 +1,71 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5023cd688be73d8624990de5e7fd48e3fda4294b60f7e0eca4a1a784d2416f8c
-size 2130
+﻿using System;
+using UnityEngine;
+
+namespace UdonSharp.Serialization
+{
+    public class DefaultSerializer<T> : Serializer<T>
+    {
+        public DefaultSerializer(TypeSerializationMetadata typeMetadata)
+            : base(typeMetadata)
+        {
+        }
+
+        public override Type GetUdonStorageType()
+        {
+            return typeof(T);
+        }
+
+        public override bool HandlesTypeSerialization(TypeSerializationMetadata typeMetadata)
+        {
+            VerifyTypeCheckSanity();
+            return true;
+        }
+
+        public override void Read(ref T targetObject, IValueStorage sourceObject)
+        {
+            VerifySerializationSanity();
+
+            if (sourceObject == null)
+            {
+                Debug.LogError($"Field for {typeof(T)} does not exist");
+                return;
+            }
+
+            ValueStorage<T> storage = sourceObject as ValueStorage<T>;
+            if (storage == null)
+            {
+                Debug.LogError($"Type {typeof(T)} not compatible with serializer {sourceObject}");
+                return;
+            }
+
+            targetObject = storage.Value;
+        }
+
+        public override void Write(IValueStorage targetObject, in T sourceObject)
+        {
+            VerifySerializationSanity();
+            if (targetObject == null)
+            {
+                Debug.LogError($"Field for {typeof(T)} does not exist");
+                return;
+            }
+
+            ValueStorage<T> storage = targetObject as ValueStorage<T>;
+            if (storage == null)
+            {
+                Debug.LogError($"Type {typeof(T)} not compatible with serializer {targetObject}");
+                return;
+            }
+
+            storage.Value = sourceObject;
+        }
+
+        protected override Serializer MakeSerializer(TypeSerializationMetadata typeMetadata)
+        {
+            VerifyTypeCheckSanity();
+
+            return (Serializer)System.Activator.CreateInstance(typeof(DefaultSerializer<>).MakeGenericType(typeMetadata.cSharpType), typeMetadata);
+        }
+    }
+}
+

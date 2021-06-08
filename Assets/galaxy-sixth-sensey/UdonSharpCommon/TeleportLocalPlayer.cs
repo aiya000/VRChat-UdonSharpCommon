@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a48aefeb3a5ab402fe5d597be855ed2b096378e996a78b260b1c9d8b612a837f
-size 574
+using UdonSharp;
+using UnityEngine;
+using VRC.SDKBase;
+using VRC.Udon;
+
+/// <summary>
+/// Interactしたユーザーを、指定したオブジェクトの位置にワープさせます。
+/// </summary>
+public class TeleportLocalPlayer : UdonSharpBehaviour {
+  [SerializeField]
+  private Transform teleportedPoint;
+
+  public override void Interact() {
+    if (this.teleportedPoint == null) {
+      Debug.Log("The teleportedPoint has not set.");
+      return;
+    }
+
+    Networking.LocalPlayer.TeleportTo(this.teleportedPoint.position, this.teleportedPoint.rotation);
+  }
+}

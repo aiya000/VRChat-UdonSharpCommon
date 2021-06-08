@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:496d8bde22a6ba196f8ef1018b02b059af84e34d4319038e71f65e2ed117ac25
-size 258
+
+using UnityEngine;
+using VRC.SDK3.Components;
+using VRC.SDKBase;
+using VRC.Udon;
+
+namespace UdonSharp.Examples.Utilities
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class <TemplateClassName> : UdonSharpBehaviour 
+    {
+    }
+}

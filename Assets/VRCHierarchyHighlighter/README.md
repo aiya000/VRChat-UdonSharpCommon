@@ -1,3 +1,106 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4de92887f0b554c48e07169cd740a6fcbb853a54db6bb4d0945b9c7248ca9af4
-size 5519
+# VRCHierarchyHighlighter
+
+ヒエラルキの階層表示をハイライトで強調表示するのと、
+VRCで扱う重要コンポーネントをアイコンで表示するやつです。
+
+対応コンポーネントは、
+* VRC_AvaterDescriptor(or VRC.SDK3.Components.VRCAvaterDescriptor)
+* VRC_MirrorReflection(or VRC.SDK3.Components.VRCMirrorReflection)
+* MeshRenderer
+* SkinnedMeshRenderer
+* DynamicBone
+* AudioSource
+* Light
+* LightProbeGroup
+* ReflectionProbe
+です。
+（今後Rigidbody, Joint, Clothなどに対応するかもしれません）
+
+このエディタ拡張を導入することによって、
+間違った階層にオブジェクトを突っ込むリスクを下げたり、オブジェクトにちゃんとDynamicBoneが適用されているのか、
+どのオブジェクトがVRCのアバターコンポーネントを持っているのか、メッシュ構造を持っているのかを可視化することが出来ます。
+
+## 使い方
+
+BOOTHまたはgithubのリリースページからダウンロードしたunitypackageをプロジェクトのAssetsフォルダ直下に突っ込んでください（それ以外だと動作しません）
+
+設定パネルはUnityのメニューバーから `Window -> VRCHierarchyHighlighter` を選択して表示できます。
+
+## 捕捉
+
+このプロジェクトはMIT Licenseとなっているため、改造して再配布など自由です。
+より見やすいアイコンだったり、表示方法があれば勝手にやってもらって構いません。
+ただし、ライセンスに準拠し保持者であるわたしの名前を見える場所に表記する必要があります。
+
+## 注意
+
+コンポーネント名を文字列情報でマッチさせているため、
+オブジェクト名に明示的にコンポーネント名を含めていた場合は誤って判定されるケースがあります。
+
+## 更新履歴
+
+```
+2020.12.26.0
+    * Unity2019ダークモードへの対応
+      * Unity2018からUnity2019に移行した際、またその逆の場合はそれぞれデフォルトの設定が自動的に適用されます
+      * 上手く適用されない場合は `Window -> VRCHierarchyHighlighter` から設定パネルを表示し、その中の `Default` ボタンを押してください
+    * 設定できる色空間設定の範囲の見直しを行いました
+
+2020.11.25.0
+    * アンダーラインハイライトモードの実装。オプションから設定出来ます
+    * オブジェクトをヒエラルキ上からon/off出来るチェックボックスを実装。オプションから設定出来ます
+    * ダークモード対応準備
+    * バージョン表記を追加
+
+2020.11.24.0
+    ヒエラルキに存在するSceneの行はハイライトしないようにしました。
+
+2020.11.17.0
+    SDK3 (Avaters) に含まれる `VRC Avatar Descriptor` に対応していなかったため、対応を行いました。
+
+2020.08.17.0
+    SDK3（Avaters, Worlds）ではコンポーネントの名前空間及び名称が変更されているため、それに対応する変更を行いました。
+    この変更は応急的なものであり、他の場所で `MirrorRefrection` や `AvaterDescriptor` といったコンポーネントを定義していた場合は影響が及ぶ場合があります。
+
+2018.10.17.0
+	マージしたPRの変更点が反映されたバージョンです
+	このバージョンには
+		* Dynamic Boneコンポーネントの扱いの修正
+		* Unityのビルトインアイコンがある場合はそれを使うように修正
+	などの対応が含まれます。（詳細はリポジトリのCloseされたPR, #2~#4を参照）
+	Thanks for contribution, @esperecyan ! 
+
+2019.08.03.0
+	修正
+	* DynamicBoneColliderが含まれていた場合に以降のオブジェクトが描画されなくなる不具合を修正
+
+2019.08.02.0
+    機能を追加
+    * 新たなコンポーネント対応
+        * AudioSource, LightProbeGroup, ReflectionProbe, Light, VRC_MirrorReflection
+    修正
+    * 既存のアイコンを修正
+        * DynamicBone, MeshRenderer, SkinnedMeshRenderer
+    * コンポーネントの判定を名前ベースではなく型ベースに変更
+
+2019.07.25.0
+    機能を追加
+    * コントロールパネルの実装（Window -> VRCHierarchyHighlighter）
+        * ハイライトの色をHSVで変更できるようにしました
+        * アイコン/ハイライト/頂点数カウント（新機能）のon/offをできるようにしました
+    * SkinnedMeshRendererの頂点数をヒエラルキから確認できるようにしました（デフォルトoff）
+    * DynamicBoneに有効なターゲットが指定されていない場合、アイコンが薄くなるようにしました
+    * MeshRendererのアイコンを表示するようにしました
+
+2019.05.19.0
+	バグを修正
+	実行モードから戻ると何故かメンバが初期化され、アイコンリソースが解放されてしまう問題に対処
+	
+2019.04.27.0
+	重篤なバグを修正
+	例えば、既にDynamicBoneが設定されているアバターのprefabをHierarchyに読み込んだ場合、
+	DynamicBoneが存在しない場合は該当オブジェクトがnullとなってしまい、VRCHierarchyHighlighterが
+	メモリアクセスエラーによってエラーで中断されてしまい、以降のGameObjectが描画されない問題がありました
+```
+
+Copyright(c) 2019 AzuriteLab

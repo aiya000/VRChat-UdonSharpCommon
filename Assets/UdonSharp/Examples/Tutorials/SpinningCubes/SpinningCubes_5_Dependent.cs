@@ -1,3 +1,28 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f614bccc2c62f5bcb892572192e5cae9f6f7d080062c4b0bcc72f9861a9b332a
-size 724
+
+using UnityEngine;
+using VRC.SDK3.Components;
+using VRC.SDKBase;
+using VRC.Udon;
+
+namespace UdonSharp.Examples.Tutorials
+{
+    /// <summary>
+    /// U# implementation of the fifth Udon spinning cube example (https://www.youtube.com/watch?v=tgbGetGdwiU)
+    /// </summary>
+    [AddComponentMenu("Udon Sharp/Tutorials/Spinning Cubes 5 Dependent")]
+    public class SpinningCubes_5_Dependent : UdonSharpBehaviour 
+    {
+        bool isRotating = false;
+
+        public void DoRotate()
+        {
+            isRotating = !isRotating;
+        }
+
+        private void Update()
+        {
+            if (isRotating)
+                transform.Rotate(Vector3.up, 60f * Time.deltaTime);
+        }
+    }
+}

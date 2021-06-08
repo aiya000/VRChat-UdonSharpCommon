@@ -1,3 +1,49 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4f54a226675e33936c5ffe1e7c759598f8c003b827976a87b253d46919d64e4a
-size 1719
+﻿using System.Collections.Generic;
+using UnityEngine;
+using VRC.SDKBase;
+
+namespace VRCPrefabs.CyanEmu
+{
+    [AddComponentMenu("")]
+    public class CyanEmuObjectSpawnHelper : MonoBehaviour
+    {
+        private List<GameObject> spawnedObjects_ = new List<GameObject>();
+        private VRC_ObjectSpawn objectSpawn_;
+
+        public static void InitializeSpawner(VRC_ObjectSpawn objectSpawn)
+        {
+            CyanEmuObjectSpawnHelper spawnHelper = objectSpawn.GetComponent<CyanEmuObjectSpawnHelper>();
+            if (spawnHelper == null)
+            {
+                spawnHelper = objectSpawn.gameObject.AddComponent<CyanEmuObjectSpawnHelper>();
+                spawnHelper.objectSpawn_ = objectSpawn;
+            }
+
+            if (objectSpawn.Instantiate == null)
+            {
+                objectSpawn.Instantiate = spawnHelper.SpawnObject;
+            }
+            if (objectSpawn.ReapObjects == null)
+            {
+                objectSpawn.ReapObjects = spawnHelper.ReapObjects;
+            }
+        }
+
+        private void SpawnObject(Vector3 position, Quaternion rotation)
+        {
+            this.Log("Spawning Object " + objectSpawn_.ObjectPrefab.name + " at " + position + " and rotataion " + rotation);
+            GameObject spawnedObject = CyanEmuMain.SpawnObject(objectSpawn_.ObjectPrefab, position, rotation);
+            spawnedObjects_.Add(spawnedObject);
+        }
+
+        private void ReapObjects()
+        {
+            this.Log("Reaping all spawned objects");
+            foreach (GameObject obj in spawnedObjects_)
+            {
+                Destroy(obj);
+            }
+            spawnedObjects_.Clear();
+        }
+    }
+}
