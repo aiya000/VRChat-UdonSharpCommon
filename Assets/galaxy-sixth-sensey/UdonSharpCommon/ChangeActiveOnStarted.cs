@@ -12,7 +12,7 @@ using VRC.Udon;
 /// ワールド初期状態で無効状態にしておきたいとき・
 /// またはその逆のときに便利。
 /// </summary>
-public class InactivateObjectsOnStarted : UdonSharpBehaviour {
+public class ChangeActiveOnStarted : UdonSharpBehaviour {
   [SerializeField]
   private GameObject[] targetsToActivate;
 
