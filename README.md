@@ -8,9 +8,42 @@ To support making your VRChat world with UdonSharp :tada::sparkles:
 
 :gift: **PullRequests are welcome** :gift:
 
-## Detail
+## Examples
 
-TODO
+Everything of UdonSharpCommon can work as both local (not to sync) and global (to sync for users on the world)!
+
+- - -
+
+- `TeleportLocalPlayer`: Moves a local player to a specified point when interacted
+
+- `ToggleAllGameObjects`: Toggles (Enables/Disables) specified GameObjects when interacted
+    - Make disabled objects to enable
+    - Make enabled objects to disable
+
+- `SwitchGameObjects`: Activates only a GameObjects of next of current activated GameObject when interacted
+    - Activates only the 2nd object if the 1st object is active
+    - Activates only the 3rd object if the 2nd object is active
+    - ...
+    - Activates only the 1st object if the last object is active
+    - **!** This is useful for switching lights to dark, usual, and brilliant
+
+- `ChangeActiveOnStarted`: Activates or Inactivates objects when your world initialized
+
+- `ChangeLocalPlayerMovingStrengthOnInteract`: Changes jumping power, walk speed, and run speed of a local user when interacted
+
+- `Activate`: Only activates specified GameObjects when interacted. Doesn't disable objects.
+
+```cs
+[SerializeField]
+private GameObject[] targetsToActivate;
+
+[SerializeField]
+private GameObject[] targetsToInactivate;
+```
+
+- - -
+
+Please see `*.cs` on ['VRChat-UdonSharpCommon/Assets/galaxy-sixth-sensey/UdonSharpCommon - GitHub'](https://github.com/aiya000/VRChat-UdonSharpCommon/tree/main/Assets/galaxy-sixth-sensey/UdonSharpCommon)
 
 ## About this development
 ### Prepare to build
