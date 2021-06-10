@@ -12,10 +12,13 @@ public class TeleportLocalPlayer : UdonSharpBehaviour {
 
   public override void Interact() {
     if (this.teleportedPoint == null) {
-      Debug.Log("The teleportedPoint has not set.");
+      Debug.LogError("TeleportLocalPlayer: .teleportedPoint has not set");
       return;
     }
 
-    Networking.LocalPlayer.TeleportTo(this.teleportedPoint.position, this.teleportedPoint.rotation);
+    Networking.LocalPlayer.TeleportTo(
+      this.teleportedPoint.position,
+      this.teleportedPoint.rotation
+    );
   }
 }

@@ -1,8 +1,8 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
+using VRC.Udon;
 
 /// <summary>
 /// 指定された全てのGameObjectのうち、1つのみを有効化します。

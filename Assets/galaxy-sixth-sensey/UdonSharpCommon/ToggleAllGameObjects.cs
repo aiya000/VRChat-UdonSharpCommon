@@ -16,7 +16,7 @@ public class ToggleAllGameObjects : UdonSharpBehaviour {
 
   public override void Interact() {
     if (this.targets == null) {
-      Debug.Log("ToggleAllGameObjects: The targets has not set.");
+      Debug.LogError("ToggleAllGameObjects: The targets has not set.");
       return;
     }
 
@@ -30,7 +30,7 @@ public class ToggleAllGameObjects : UdonSharpBehaviour {
   public void ToggleActivityAll() {
     foreach (var target in this.targets) {
       if (target == null) {
-        Debug.Log("ToggleAllGameObjects: ToggleActivityAll(): A target is null. Skip.");
+        Debug.LogError("ToggleAllGameObjects: ToggleActivityAll(): A target is null. Skip.");
         continue;
       }
       target.SetActive(!target.activeSelf);
