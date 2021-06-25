@@ -1,0 +1,39 @@
+# :diamond_shape_with_a_dot_inside: UdonSharpCommon :diamond_shape_with_a_dot_inside:
+
+This is an asset of UdonSharp script sets.
+
+To support making your VRChat world with UdonSharp :tada::sparkles:
+
+(Udon#, U#)
+
+:gift: **PullRequests are welcome** :gift:
+
+## Reference
+
+Everything of UdonSharpCommon can work as both local (not to sync) and global (to sync for users on the world)!
+
+<details>
+<summary>Reference</summary>
+
+!INCLUDE "./Assets/galaxy-sixth-sensey/UdonSharpCommon/Reference.md"
+
+</details>
+
+Please also see ['VRChat-UdonSharpCommon/Assets/galaxy-sixth-sensey/UdonSharpCommon - GitHub'](https://github.com/aiya000/VRChat-UdonSharpCommon/tree/main/Assets/galaxy-sixth-sensey/UdonSharpCommon).
+
+## About this development
+### Prepare to build
+
+This project is including a world to test U# scirpts.
+
+Before run (please see below 'Run' section), we must import below assets yourself.
+(To avoid infringing the licenses.)
+
+- VRCSDK3-WORLD (Currently recommended `VRCSDK3-WORLD-2021.06.03.14.57_Public`)
+
+### Run
+
+We can check the world by 2 ways.
+
+1. Run by unity (via CyanEmu)
+2. `Build & Test` by VRChat SDK tab
