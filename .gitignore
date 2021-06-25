@@ -75,6 +75,7 @@ InitTestScene*.unity
 /[Ll]ibrary/*
 !/[Ll]ibrary/metadata
 !/[Ll]ibrary/assetDatabase3
+Assets/SerializedUdonPrograms/*
 
 # To save licenses
 Assets/Udon
