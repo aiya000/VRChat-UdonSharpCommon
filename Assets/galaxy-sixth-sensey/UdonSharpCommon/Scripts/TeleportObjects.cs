@@ -44,11 +44,9 @@ namespace UdonSharpCommon {
       }
     }
 
-    private void DoTeleportObjects() {
+    public void DoTeleportObjects() {
       for (var i = 0; i < this.targets.Length; i++) {
         var target = this.targets[i];
-        // TODO: Curently teleporting via network is not work well
-        Networking.SetOwner(Networking.LocalPlayer, target);
 
         if (i >= this.points.Length) {
           Debug.LogError($"TeleportObjects: A point of this.targets[{i}] has not set. Exit.");

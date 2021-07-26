@@ -25,12 +25,12 @@ namespace UdonSharpCommon {
 
     public void Start() {
       if (this.targetsToActivate == null) {
-        Debug.LogError("Activate: this.targetsToActivate is null. Skip.");
+        Debug.LogError("ChangeActiveOnStarted: this.targetsToActivate is null. Skip.");
         return;
       }
 
       if (this.targetsToInactivate == null) {
-        Debug.LogError("Activate: this.targetsToInactivate is null. Skip.");
+        Debug.LogError("ChangeActiveOnStarted: this.targetsToInactivate is null. Skip.");
         return;
       }
 
@@ -43,10 +43,10 @@ namespace UdonSharpCommon {
       }
     }
 
-    private void SetActiveAll() {
+    public void SetActiveAll() {
       foreach (var target in this.targetsToActivate) {
         if (target == null) {
-          Debug.LogError("Activate: target is null. Skip.");
+          Debug.LogError("ChangeActiveOnStarted: target is null. Skip.");
           continue;
         }
 
@@ -54,10 +54,10 @@ namespace UdonSharpCommon {
       }
     }
 
-    private void SetInactiveAll() {
+    public void SetInactiveAll() {
       foreach (var target in this.targetsToInactivate) {
         if (target == null) {
-          Debug.LogError("Activate: target is null. Skip.");
+          Debug.LogError("ChangeActiveOnStarted: target is null. Skip.");
           continue;
         }
 
