@@ -4,31 +4,52 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [Classes](#classes)
-  - [Activate](#activate)
-  - [ChangeActiveOnStarted](#changeactiveonstarted)
-  - [ChangeLocalPlayerMovingStrengthOnInteract](#changelocalplayermovingstrengthoninteract)
-  - [FlyByToggling](#flybytoggling)
-  - [FlyByUsingDown](#flybyusingdown)
-  - [SwitchGameObjects](#switchgameobjects)
-  - [TeleportLocalPlayer](#teleportlocalplayer)
-  - [TeleportObjects](#teleportobjects)
-  - [ToggleAllGameObjects](#toggleallgameobjects)
+- [Activate](#activate)
+  - [Issues](#issues)
+    - [ポータルをActivate（Inactivate）できない](#%E3%83%9D%E3%83%BC%E3%82%BF%E3%83%AB%E3%82%92activateinactivate%E3%81%A7%E3%81%8D%E3%81%AA%E3%81%84)
+- [ChangeActiveOnStarted](#changeactiveonstarted)
+- [ChangeLocalPlayerMovingStrengthOnInteract](#changelocalplayermovingstrengthoninteract)
+- [FlyByToggling](#flybytoggling)
+- [FlyByUsingDown](#flybyusingdown)
+- [SwitchGameObjects](#switchgameobjects)
+  - [Issues](#issues-1)
+- [TeleportLocalPlayer](#teleportlocalplayer)
+- [TeleportObjects](#teleportobjects)
+- [ToggleAllGameObjects](#toggleallgameobjects)
+- [SwitchPortalRoomId](#switchportalroomid)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Activate
 
-Interact時に、指定された全てのGameObjectを有効化します。
+Interact時に、指定された全てのGameObjectを有効化・もしくは無効化します。
+オブジェクトを無効化したい場合は`doInactivateInstead = true`を指定してください。
+
 次にInteractされても、オブジェクトを再度無効化する等はしません。
+トグルしたい場合は`ToggleAllGameObjects`を使用してください。
 
 ```cs
 [SerializeField]
 private GameObject[] targets;
 
 [SerializeField]
+private bool doInactivateInstead = false;
+
+[SerializeField]
 private bool isWorkingOnlyOnLocal = false;
 ```
+
+### Issues
+
+<a name="activate-issues-unable-to-activate-nor-inactivate-portals"></a>
+
+#### ポータルをActivate（Inactivate）できない
+
+これを用いたポータル（`VRCPortalMarker`なオブジェクト？）の有効化は不可能なようです。
+
+調査求む！ [Issue1](https://github.com/aiya000/VRChat-UdonSharpCommon/issues/1)
+
+PRs are welcome!
 
 ## ChangeActiveOnStarted
 
@@ -121,6 +142,14 @@ PickupオブジェクトのUse時のみに実行したい場合
 （例えば傘を持った状態でトリガーを引いたときに、傘を開きたい場合）
 は、`runOnInteract`をfalseに・`runOnPickupUseUp`をtrueにするとうまくいくはずです。
 
+### Issues
+#### ポータルをActivate（Inactivate）できない
+
+['ポータルをActivate（Inactivate）できない - Issues - Activate'](#activate-issues-unable-to-activate-nor-inactivate-portals)
+と同様に、ポータルを操作できません。
+
+代わりに[SwitchPortalRoomId](#switchportalroomid)を使用してください。
+
 ## TeleportLocalPlayer
 
 Interactしたユーザーを、指定したオブジェクトの位置にワープさせます。
@@ -159,6 +188,26 @@ Targetsに指定された全てのGameObjectの有効・無効をトグル（反
 ```cs
 [SerializeField]
 private GameObject[] targets;
+
+[SerializeField]
+private bool isWorkingOnlyOnLocal = false;
+```
+
+## SwitchPortalRoomId
+
+**WIP**: 機能しているのかよくわかってない。PRs are welcome!
+
+ポータルのワールドID（RoomID）を切り替えます。
+これを用いて、実質的にポータルの切り替えが可能です。
+
+**ただし非公開ワールドのIDも扱うことができるので、そのワールドIDは自己責任で扱ってください。**
+
+```cs
+[SerializeField]
+private VRCPortalMarker portal;
+
+[SerializeField]
+private string[] worldIds;
 
 [SerializeField]
 private bool isWorkingOnlyOnLocal = false;
