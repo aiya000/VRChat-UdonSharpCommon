@@ -150,6 +150,8 @@ PickupオブジェクトのUse時のみに実行したい場合
 
 代わりに[SwitchPortalRoomId](#switchportalroomid)を使用してください。
 
+調査求む！ [Issue2](https://github.com/aiya000/VRChat-UdonSharpCommon/issues/2)
+
 ## TeleportLocalPlayer
 
 Interactしたユーザーを、指定したオブジェクトの位置にワープさせます。
