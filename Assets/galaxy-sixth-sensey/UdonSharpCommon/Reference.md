@@ -152,6 +152,32 @@ PickupオブジェクトのUse時のみに実行したい場合
 
 調査求む！ [Issue2](https://github.com/aiya000/VRChat-UdonSharpCommon/issues/2)
 
+## SwitchDirectlyChildrenGameObjects
+
+SwitchGameObjectsと似ていますが、`root`の子GameObject全てを対象にスイッチします。
+
+例えば下記では、`X -> Y -> Z -> X`の順に有効化します。
+
+- root
+    - X
+    - Y
+        - YX
+    - Z
+
+```cs
+[SerializeField]
+private Transform root;
+
+[SerializeField]
+private bool runOnInteract = true;
+
+[SerializeField]
+private bool runOnPickupUseUp = true;
+
+[SerializeField]
+private bool isWorkingOnlyOnLocal = false;
+```
+
 ## TeleportLocalPlayer
 
 Interactしたユーザーを、指定したオブジェクトの位置にワープさせます。
