@@ -4,6 +4,10 @@ using UnityEngine.UI;
 using VRC.SDKBase;
 using System.Reflection;
 
+// Noodle bowl defines its own button class, which would break CyanEmu.
+// Ensuring button is properly defined with this using statement.
+using UIButton = UnityEngine.UI.Button; 
+
 #if UDON
 using VRC.Udon;
 using VRC.Udon.Common;
@@ -23,7 +27,8 @@ namespace VRCPrefabs.CyanEmu
         private enum Stance {
             STANDING,
             CROUCHING,
-            PRONE
+            PRONE,
+            SITTING
         }
 
         public const float DEFAULT_RUN_SPEED_ = 4;
@@ -35,6 +40,7 @@ namespace VRCPrefabs.CyanEmu
         private const float STANDING_HEIGHT_ = 1.6f;
         private const float CROUCHING_HEIGHT_ = 1.0f;
         private const float PRONE_HEIGHT_ = 0.5f;
+        private const float SITTING_HEIGHT_ = 0.88f;
 
         private const float STICK_TO_GROUND_FORCE_ = 2f;
         private const float RATE_OF_AIR_ACCELERATION_ = 5f;
@@ -86,6 +92,7 @@ namespace VRCPrefabs.CyanEmu
         private CollisionFlags collisionFlags_;
         private bool peviouslyGrounded_;
         private bool legacyLocomotion_;
+        private bool updateStancePosition_;
 
         private Texture2D reticleTexture_;
 
@@ -146,6 +153,7 @@ namespace VRCPrefabs.CyanEmu
             cameraHolder.transform.SetParent(playerCamera_.transform, false);
             camera_ = cameraHolder.AddComponent<Camera>();
             camera_.cullingMask &= ~(1 << 18); // remove mirror reflection
+            updateStancePosition_ = false;
 
             // TODO, make based on avatar armspan/settings
             cameraHolder.transform.localScale = Vector3.one * AVATAR_SCALE_;
@@ -163,12 +171,14 @@ namespace VRCPrefabs.CyanEmu
             rightArmPosition_ = new GameObject("Right Arm Position");
             rightArmPosition_.transform.SetParent(playerCamera_.transform, false);
             rightArmPosition_.transform.localPosition = new Vector3(0.2f, -0.2f, 0.75f);
+            rightArmPosition_.transform.localRotation = Quaternion.Euler(-45, 0, -90);
             rightArmRigidbody_ = rightArmPosition_.AddComponent<Rigidbody>();
             rightArmRigidbody_.isKinematic = true;
             
             leftArmPosition_ = new GameObject("Left Arm Position");
             leftArmPosition_.transform.SetParent(playerCamera_.transform, false);
             leftArmPosition_.transform.localPosition = new Vector3(-0.2f, -0.2f, 0.75f);
+            leftArmPosition_.transform.localRotation = Quaternion.Euler(-45, 0, -90);
             leftArmRigidbody_ = leftArmPosition_.AddComponent<Rigidbody>();
             leftArmRigidbody_.isKinematic = true;
             
@@ -284,7 +294,7 @@ namespace VRCPrefabs.CyanEmu
             menu_.layer = menuLayer;
             menu_.transform.parent = transform.parent;
             Canvas canvas = menu_.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.worldCamera = camera_;
             canvas.planeDistance = camera_.nearClipPlane + 0.1f;
             canvas.sortingOrder = 1000;
@@ -295,7 +305,7 @@ namespace VRCPrefabs.CyanEmu
             respawnButton.transform.SetParent(menu_.transform, false);
             respawnButton.transform.localPosition = new Vector3(60, 0, 0);
             respawnButton.AddComponent<Image>();
-            Button button = respawnButton.AddComponent<Button>();
+            UIButton button = respawnButton.AddComponent<UIButton>();
             button.onClick.AddListener(Respawn);
 
             GameObject respawnText = new GameObject("RespawnText");
@@ -317,7 +327,7 @@ namespace VRCPrefabs.CyanEmu
             exitMenuButton.transform.SetParent(menu_.transform, false);
             exitMenuButton.transform.localPosition = new Vector3(-60, 0, 0);
             exitMenuButton.AddComponent<Image>();
-            button = exitMenuButton.AddComponent<Button>();
+            button = exitMenuButton.AddComponent<UIButton>();
             button.onClick.AddListener(CloseMenu);
 
             GameObject exitMenuText = new GameObject("ExitMenuText");
@@ -332,6 +342,36 @@ namespace VRCPrefabs.CyanEmu
             text.rectTransform.anchorMin = Vector2.zero;
             text.rectTransform.anchorMax = Vector2.one;
             text.font = font;
+            
+#if UNITY_EDITOR           
+            GameObject settingsButton = new GameObject("SettingsButton");
+            settingsButton.layer = menuLayer;
+            settingsButton.transform.SetParent(menu_.transform, false);
+            settingsButton.transform.localPosition = new Vector3(-60, -100, 0);
+            settingsButton.AddComponent<Image>();
+            button = settingsButton.AddComponent<UIButton>();
+            
+            // TODO handle this better
+            Type settingsWindow = Type.GetType("VRCPrefabs.CyanEmu.CyanEmuSettingsWindow, Assembly-CSharp-Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            button.onClick.AddListener(() => UnityEditor.EditorWindow.GetWindow(settingsWindow, false, "CyanEmu Settings"));
+            
+            RectTransform rect = settingsButton.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(100, 50);
+
+            GameObject settingsText = new GameObject("SettingsText");
+            settingsText.layer = menuLayer;
+            settingsText.transform.SetParent(settingsButton.transform, false);
+            text = settingsText.AddComponent<Text>();
+            settingsText.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+            text.text = "Settings";
+            text.fontSize = 20;
+            text.color = Color.black;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.rectTransform.anchorMin = Vector2.zero;
+            text.rectTransform.anchorMax = Vector2.one;
+            text.font = font;
+#endif
+            
 
             ToggleMenu(true);
         }
@@ -467,6 +507,14 @@ namespace VRCPrefabs.CyanEmu
 
         public void Teleport(Vector3 position, Quaternion floorRotation, bool fromPlaySpace)
         {
+#if UDON
+            // Udon auto exits players from stations when they are teleported. 
+            if (currentStation_ != null)
+            {
+                currentStation_.ExitStation();
+            }
+#endif
+            
             floorRotation = Quaternion.Euler(0, floorRotation.eulerAngles.y, 0);
             if (fromPlaySpace)
             {
@@ -490,8 +538,6 @@ namespace VRCPrefabs.CyanEmu
                 currentStation_.ExitStation();
             }
 
-            currentStation_ = station;
-
             if (!station.IsMobile)
             {
                 characterController_.enabled = false;
@@ -499,6 +545,10 @@ namespace VRCPrefabs.CyanEmu
                 mouseLook_.SetBaseRotation(station.EnterLocation);
                 mouseLook_.SetRotation(Quaternion.identity);
             }
+
+            currentStation_ = station;
+            stance_ = Stance.SITTING;
+            updateStancePosition_ = true;
         }
 
         public void ExitStation(CyanEmuStationHelper station)
@@ -512,6 +562,8 @@ namespace VRCPrefabs.CyanEmu
             }
             mouseLook_.SetBaseRotation(null);
             jump_ = false;
+            stance_ = Stance.STANDING;
+            updateStancePosition_ = true;
         }
 
         public void PickupObject(CyanEmuPickupHelper pickup)
@@ -535,7 +587,7 @@ namespace VRCPrefabs.CyanEmu
                 FixedJoint fixedJoint = rightArmPosition_.GetComponent<FixedJoint>();
                 if (fixedJoint)
                 {
-                    DestroyImmediate(fixedJoint);
+                    Destroy(fixedJoint);
                 }
 
                 Rigidbody rigidbody = pickup.GetRigidbody();
@@ -607,7 +659,7 @@ namespace VRCPrefabs.CyanEmu
             RotateView();
             if (!jump_ && characterController_.isGrounded && jumpSpeed_ > 0)
             {
-                jump_ = Input.GetButton("Jump");
+                jump_ = Input.GetButtonDown("Jump");
             }
 
             if (currentPickup_ != null)
@@ -775,12 +827,12 @@ namespace VRCPrefabs.CyanEmu
             // Handle sending movement input to Udon.
             if (Mathf.Abs(prevMoveInput_.x - prevInputResult_.x) > 1e-3)
             {
-                var args = new UdonInputEventArgs(prevMoveInput_.x, HandType.RIGHT);
+                var args = new UdonInputEventArgs(prevInputResult_.x, HandType.RIGHT);
                 UdonManager.Instance.RunInputAction(UdonManager.UDON_MOVE_HORIZONTAL, args);
             }
             if (Mathf.Abs(prevMoveInput_.y - prevInputResult_.y) > 1e-3)
             {
-                var args = new UdonInputEventArgs(prevMoveInput_.y, HandType.RIGHT);
+                var args = new UdonInputEventArgs(prevInputResult_.y, HandType.RIGHT);
                 UdonManager.Instance.RunInputAction(UdonManager.UDON_MOVE_VERTICAL, args);
             }
 
@@ -836,11 +888,9 @@ namespace VRCPrefabs.CyanEmu
 
         private void UpdateStance()
         {
-            bool updatePosition = false;
-
-            if (Input.GetKeyDown(CyanEmuSettings.Instance.crouchKey))
+            if (Input.GetKeyDown(CyanEmuSettings.Instance.crouchKey) && currentStation_ == null)
             {
-                updatePosition = true;
+                updateStancePosition_ = true;
                 if (stance_ == Stance.CROUCHING)
                 {
                     stance_ = Stance.STANDING;
@@ -850,9 +900,9 @@ namespace VRCPrefabs.CyanEmu
                     stance_ = Stance.CROUCHING;
                 }
             }
-            if (Input.GetKeyDown(CyanEmuSettings.Instance.proneKey))
+            if (Input.GetKeyDown(CyanEmuSettings.Instance.proneKey) && currentStation_ == null)
             {
-                updatePosition = true;
+                updateStancePosition_ = true;
                 if (stance_ == Stance.PRONE)
                 {
                     stance_ = Stance.STANDING;
@@ -864,12 +914,14 @@ namespace VRCPrefabs.CyanEmu
             }
             
 
-            if (updatePosition)
+            if (updateStancePosition_)
             {
                 Vector3 cameraPosition = playerCamera_.transform.localPosition;
-                cameraPosition.y = (stance_ == Stance.STANDING ? STANDING_HEIGHT_ : stance_ == Stance.CROUCHING ? CROUCHING_HEIGHT_ : PRONE_HEIGHT_);
+                cameraPosition.y = (stance_ == Stance.STANDING ? STANDING_HEIGHT_ : stance_ == Stance.CROUCHING ? CROUCHING_HEIGHT_ : stance_ == Stance.PRONE ? PRONE_HEIGHT_ : SITTING_HEIGHT_);
                 playerCamera_.transform.localPosition = cameraPosition;
             }
+
+            updateStancePosition_ = false;
         }
 
         private void GetInput(out Vector2 speed, out Vector2 input)
@@ -964,6 +1016,11 @@ namespace VRCPrefabs.CyanEmu
 
         private void OnGUI()
         {
+            // TODO if VR also return
+            if (!CyanEmuSettings.Instance.showDesktopReticle)
+            {
+                return;
+            }
             Vector2 center = CyanEmuBaseInput.GetScreenCenter();
             Vector2 size = new Vector2(reticleTexture_.width, reticleTexture_.height);
             Rect position = new Rect(center - size * 0.5f, size);

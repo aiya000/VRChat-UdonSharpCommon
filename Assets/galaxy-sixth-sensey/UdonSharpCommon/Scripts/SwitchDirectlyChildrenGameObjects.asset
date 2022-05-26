@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: SwitchDirectlyChildrenGameObjects
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: c63b437215c6b144999a461e1b7105b0,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: aacee9f6e20f1774a8d3e6bd0b6133ad,
     type: 2}
   udonAssembly: 
   assemblyError: 
